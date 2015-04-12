@@ -1,26 +1,19 @@
 package ast;
 
 public class NodoValor extends NodoBase {
-    
-    private Object valor;
-    private tipoVariable tipo;
+	private Integer valor;
 
-    public NodoValor(Object valor, tipoVariable tipo) {
-        super();
-        this.valor = valor;
-        this.tipo = tipo;
-    }
+	public NodoValor(Integer valor) {
+		super();
+		this.valor = valor;
+	}
 
-    public NodoValor() {
-        super();
-    }
+	public NodoValor() {
+		super();
+	}
+	
+	public Integer getValor() {
+		return valor;
+	}
 
-    public Object getValor() {
-        return valor;
-    }
-
-    public tipoVariable getTipo() {
-        return tipo;
-    }
-    
 }
