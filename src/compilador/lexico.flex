@@ -32,12 +32,11 @@ import java_cup.runtime.*;
 %column
 
 
-
 digito		= [0-9]
-numero		= {digito}+
-letra			= [a-zA-Z]
+numero		= -?{digito}+
+letra   	= [a-zA-Z]
 identificador	= {letra}+
-nuevalinea		= \n | \n\r | \r\n
+nuevalinea	= \n | \n\r | \r\n
 espacio		= [ \t]+
 %%
 "if"            {	if(debug) System.out.println("token IF");
@@ -94,6 +93,57 @@ espacio		= [ \t]+
 ";"             {	if(debug) System.out.println("token SEMI");
 			return sf.newSymbol("SEMI",sym.SEMI);
 			}
+">"             {       if(debug) System.out.println("token GT");
+                        return sf.newSymbol("GT",sym.GT);
+                        }
+"!="            {       if(debug) System.out.println("token NE");
+                        return sf.newSymbol("NE",sym.NE);
+                        }
+">="            {       if(debug) System.out.println("token GE");
+                        return sf.newSymbol("GE",sym.GE);
+                        }
+"<="            {       if(debug) System.out.println("token LE");
+                        return sf.newSymbol("LE",sym.LE);
+                        }
+"for"           {       if(debug) System.out.println("token FOR");
+                        return sf.newSymbol("FOR",sym.FOR);
+                        }
+"begin"         {       if(debug) System.out.println("token BEGIN");
+                        return sf.newSymbol("BEGIN",sym.BEGIN);
+                        }
+"and"           {       if(debug) System.out.println("token AND");
+                        return sf.newSymbol("AND",sym.AND);
+                        }
+"or"            {       if(debug) System.out.println("token OR");
+                        return sf.newSymbol("OR",sym.OR);
+                        }
+"["             {       if(debug) System.out.println("token LSB");
+                        return sf.newSymbol("LSB",sym.LSB);
+                        }
+"]"             {       if(debug) System.out.println("token RSB");
+                        return sf.newSymbol("RSB",sym.RSB);
+                        }
+"boolean"       {       if(debug) System.out.println("token BOOL");
+                        return sf.newSymbol("BOOL",sym.BOOL);
+                        }
+"int"           {       if(debug) System.out.println("token INT");
+                        return sf.newSymbol("INT",sym.INT);
+                        }
+"void"          {       if(debug) System.out.println("token VOID");
+                        return sf.newSymbol("VOID",sym.VOID);
+                        }
+","             {       if(debug) System.out.println("token COMMA");
+                        return sf.newSymbol("COMMA",sym.COMMA);
+                        }
+"return"        {       if(debug) System.out.println("token RETURN");
+                        return sf.newSymbol("RETURN",sym.RETURN);
+                        }
+"true"          {       if(debug) System.out.println("token TRUE");
+                        return sf.newSymbol("TRUE",sym.TRUE);
+                        }
+"false"         {       if(debug) System.out.println("token FALSE");
+                        return sf.newSymbol("FALSE",sym.FALSE);
+                        }
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new Integer(yytext()));
 			}
