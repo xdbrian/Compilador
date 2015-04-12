@@ -102,8 +102,8 @@ program_struct ::= funcs_seq:fs main_program:mp
                     {:
                         if(modoDepuracion)
                             System.out.println("\t regla 2a");
-                        fs.setHermanoDerecha(mp);
-                        RESULT = fs;
+                        mp.setHermanoDerecha(fs);
+                        RESULT = mp;
                     :}
                 | main_program:mp
                     {:
