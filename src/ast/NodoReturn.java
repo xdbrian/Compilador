@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package ast;
 
 public class NodoReturn extends NodoBase{
@@ -15,3 +16,22 @@ public class NodoReturn extends NodoBase{
     }
         
 }
+=======
+package ast;
+
+public class NodoReturn extends NodoBase{
+    
+    private NodoBase valor;
+    
+    public NodoReturn(NodoBase valor)
+    {
+        super();
+        this.valor = valor;
+    }
+
+    public NodoBase getValor() {
+        return valor;
+    }
+        
+}
+>>>>>>> origin/master
