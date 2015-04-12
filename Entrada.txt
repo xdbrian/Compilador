@@ -1,21 +1,4 @@
-
-void funcionuno()
 begin
 	int x;
 end
-int funciondos(boolean valor, int x)
-begin
-	return funcionuno() * 5;
-end
-begin
-	for(x := 5; x < 10 ; x := x + 1)	
-		funcionuno();
-		y := funciondos(true);
-	end;
-	int a, b, c;
-	if 2 + 3 then
-		write a;
-	else
-		write b;
-	end;
-end
+	
