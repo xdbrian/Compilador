@@ -9,6 +9,7 @@ public class Util {
 		  sangria+=2;
 		  while (raiz != null) {
 		    printSpaces();
+                    
 		    if (raiz instanceof  NodoIf)
 		    	System.out.println("If");
 		    else if (raiz instanceof  NodoRepeat)
@@ -27,6 +28,33 @@ public class Util {
 		    		|| raiz instanceof NodoValor
 		    		|| raiz instanceof NodoIdentificador )
 		    	imprimirNodo(raiz);
+/*agredando al arbol*/
+                    else if(raiz instanceof NodoFuncion)
+                        if(((NodoFuncion)raiz).getNombre()!=null)
+                        System.out.println("Funcion");
+                        else
+                              System.out.println("Main");
+                    else if(raiz instanceof NodoFor)
+                          System.out.println("For");
+                    else if(raiz instanceof NodoAsignacion)
+                          System.out.println("Asignacion");
+                    else if(raiz instanceof NodoDeclaracion)
+                          System.out.println("Declaracion");
+                    else if(raiz instanceof NodoLlamada)
+                          System.out.println("Llamada");
+                    else if(raiz instanceof NodoOperacion)
+                          System.out.println("operacion");
+                    else if(raiz instanceof NodoValor)
+                          System.out.println("valor");
+                    else if(raiz instanceof NodoIdentificador)
+                          System.out.println("Identificador");
+                    else if(raiz instanceof NodoReturn)
+                          System.out.println("Return");                   
+                    else if(raiz instanceof NodoVariable)
+                          System.out.println(((NodoVariable)raiz).getNombre());
+                    
+                                                                
+/*agregando al arbol*/                        
 		    else System.out.println("Tipo de nodo desconocido");;
 		    
 		    /* Hago el recorrido recursivo */
@@ -63,6 +91,57 @@ public class Util {
 		    	System.out.println("**Expr Derecha Operacion**");		    	
 		    	imprimirAST(((NodoOperacion)raiz).getOpDerecho());
 		    }
+/*agregando al arbol*/                    
+                    else  if (raiz instanceof NodoFuncion)
+                    {
+                        printSpaces();
+                        if(((NodoFuncion)raiz).getNombre()!=null)
+                        {
+                        System.out.print(((NodoFuncion)raiz).getTipoRetorno());                        
+                        System.out.print(" "+((NodoFuncion)raiz).getNombre());
+                                                               
+                        System.out.print("(");                        
+                        imprimirAST(((NodoFuncion)raiz).getArgumento());
+                        System.out.println(")");                        
+                        printSpaces();
+                        }
+                        System.out.println("**Cuerpo**");
+                        imprimirAST(((NodoFuncion)raiz).getCuerpo());                        
+                        printSpaces();
+                        System.out.println("**END**");
+                        
+                    }  else  if (raiz instanceof NodoDeclaracion)                        
+                    {
+                        printSpaces();
+                        System.out.println("Tipo "+((NodoDeclaracion)raiz).getTipo());                                                
+                        imprimirAST(((NodoDeclaracion)raiz).getVariable());
+                    } else  if (raiz instanceof NodoFor)
+                    {
+                        printSpaces();
+                        System.out.println("Declaracion");
+                        imprimirAST(((NodoFor)raiz).getInicializacion());
+                        printSpaces();
+                        System.out.println("Condicion");
+                        imprimirAST(((NodoFor)raiz).getCondicion());
+                        printSpaces();
+                        System.out.println("asignacion");
+                        imprimirAST(((NodoFor)raiz).getAsignacion());
+                        printSpaces();
+                        System.out.println("Cuerpo");
+                        imprimirAST(((NodoFor)raiz).getCuerpo());
+
+                    }else  if (raiz instanceof NodoLlamada)
+                    {
+                        printSpaces();
+                        System.out.println(((NodoLlamada)raiz).getNombre());
+                        if(((NodoLlamada)raiz).getArgumento()!=null)
+                        {
+                            printSpaces();
+                            System.out.println("argumento");
+                            imprimirAST(((NodoLlamada)raiz).getArgumento());
+                        }
+                    }
+/*agregando al arbol*/
 		    raiz = raiz.getHermanoDerecha();
 		  }
 		  sangria-=2;
@@ -112,6 +191,4 @@ static void imprimirNodo( NodoBase raiz )
 	}
 
 }
-
-
 }
