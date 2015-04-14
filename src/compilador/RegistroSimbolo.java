@@ -2,15 +2,27 @@ package compilador;
 
 public class RegistroSimbolo {
 	private String identificador;
+ 
 	private int NumLinea;
-	private int DireccionMemoria;
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+	private int DireccionMemoria;        
+        private String tipo;
 	
-	public RegistroSimbolo(String identificador, int numLinea,
+	public RegistroSimbolo(String tipo, int numLinea,
 			int direccionMemoria) {
 		super();
-		this.identificador = identificador;
+		
 		NumLinea = numLinea;
 		DireccionMemoria = direccionMemoria;
+                
+                this.tipo=tipo;
 	}
 
 	public String getIdentificador() {

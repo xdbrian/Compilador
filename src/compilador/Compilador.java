@@ -25,11 +25,11 @@ public class Compilador {
 		System.out.println();
 		ast.Util.imprimirAST(root);
 		TablaSimbolos ts = new TablaSimbolos();
-		ts.cargarTabla(root);
+		ts.cargarTabla(root, 0);
 		ts.ImprimirClaves();
-	    //REALIZAR ACA ANALISIS SEMANTICO
-		Generador.setTablaSimbolos(ts);
-		Generador.generarCodigoObjeto(root);
+//	    //REALIZAR ACA ANALISIS SEMANTICO
+//		Generador.setTablaSimbolos(ts);
+//		Generador.generarCodigoObjeto(root);
 	}
 
 }
