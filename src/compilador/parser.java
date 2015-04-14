@@ -1,6 +1,3 @@
-
-
-
 package compilador;
 
 import java_cup.runtime.*;
