@@ -1,12 +1,21 @@
 void funcionuno()
 begin
+        int alto, ancho;
 	write 5 * 6;
 end
 int funciondos(int x, boolean y)
 begin
-	return 1;
+        boolean esCuadrado, w;
+        int wa;
+        x := 0;
+	return 1;        
 end
 begin
-	int x;
+        int w[4];	
+	boolean a;
+        int s, z;
+        if true then
+            write 1;
+        end;        
 end
 	

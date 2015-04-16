@@ -4,7 +4,7 @@ package ast;
 public class NodoVariable extends NodoBase {
     
     private String nombre;
-    private int tamano;
+    private int tamano;    
     
     public String getNombre() {
         return nombre;

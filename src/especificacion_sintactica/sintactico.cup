@@ -5,8 +5,7 @@ import ast.*;
 
 action code {:
 	private boolean modoDepuracion=false;
-	private NodoBase ast=null;
-	private int lineanum=0;
+	private NodoBase ast=null;        
 	
 	//Debe ser llamada solo despues de un parse(), en caso contrario retornara null siempre;
 	public NodoBase getASTroot(){
@@ -95,21 +94,45 @@ program ::= program_struct:ps
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 1"); 
-                    ast = ps; 
+                    ast = ps;
+                    if(ps == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 program_struct ::= funcs_seq:fs main_program:mp
                     {:
                         if(modoDepuracion)
                             System.out.println("\t regla 2a");
-                        mp.setHermanoDerecha(fs);
-                        RESULT = mp;
+                        NodoBase nodoActual = fs;
+                        if(nodoActual != null)
+                        {
+                            while(nodoActual.TieneHermano())
+                            {
+                                nodoActual = nodoActual.getHermanoDerecha();
+                            }
+                            nodoActual.setHermanoDerecha(mp);
+                            RESULT = fs;
+                        }    
+                        else
+                        {
+                            RESULT = mp;
+                        }
+                        if(mp == null)
+                        {
+                            RESULT = null;
+                        }
                     :}
                 | main_program:mp
                     {:
                         if(modoDepuracion)
                             System.out.println("\t regla 2b");
                         RESULT = mp;
+                        if(mp == null)
+                        {
+                            RESULT = null;
+                        }
                     :};
 
 main_program ::= BEGIN stmt_seq:ss END
@@ -117,6 +140,10 @@ main_program ::= BEGIN stmt_seq:ss END
                         if(modoDepuracion)
                             System.out.println("\t regla 3a");
                         RESULT = new NodoFuncion(ss);
+                        if(ss == null)
+                        {
+                            RESULT = null;
+                        }
                     :}
                 | BEGIN END
                     {:
@@ -143,25 +170,41 @@ funcs_seq ::= funcs_seq:fs func:ft
                     {
                         RESULT = ft;
                     }
+                    if(ft == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | func:ft
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 4b");
                     RESULT = ft;
+                    if(ft == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 func ::= func_type:ft ID:id LPAREN func_args:fa RPAREN BEGIN stmt_seq:ss END
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 5a");
+                    System.out.println("\t regla 5a");                
                 RESULT = new NodoFuncion(ft, ss, fa, id);
+                if(ss == null)
+                {
+                    RESULT = null;
+                }
             :}
         | func_type:ft ID:id LPAREN RPAREN BEGIN stmt_seq:ss END
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 5b");
+                    System.out.println("\t regla 5b");                
                 RESULT = new NodoFuncion(ft, ss, id);
+                if(ss == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 func_type ::= var_type:vt
@@ -182,7 +225,7 @@ func_args ::= func_args:fa COMMA var_type:vt ID:id
                     if(modoDepuracion)
                         System.out.println("\t regla 7a");
                     NodoBase nodoActual = fa;
-                    NodoDeclaracion nodoSiguiente = new NodoDeclaracion(new NodoVariable(id), vt);
+                    NodoDeclaracion nodoSiguiente = new NodoDeclaracion(new NodoVariable(id), vt, ((Scanner)parser.getScanner()).getLine());
                     if(nodoActual != null)
                     {
                         while(nodoActual.TieneHermano())
@@ -195,13 +238,13 @@ func_args ::= func_args:fa COMMA var_type:vt ID:id
                     else
                     {
                         RESULT = nodoSiguiente;
-                    }
+                    }                    
                 :}
             | var_type:vt ID:id
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 7b");                    
-                    RESULT = new NodoDeclaracion(new NodoVariable(id), vt);
+                    RESULT = new NodoDeclaracion(new NodoVariable(id), vt, ((Scanner)parser.getScanner()).getLine());
                 :};
 
 var_type ::= BOOL 
@@ -235,67 +278,111 @@ stmt_seq ::= stmt_seq:ss stmt:sm SEMI
                     {
                         RESULT = sm;
                     }
+                    if(sm == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | stmt:sm SEMI
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 9b");
                     RESULT = sm;
+                    if(sm == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 stmt ::= if_stmt:is 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10a");
+                        System.out.println("\t regla 10a");                
                 RESULT = is;
+                if(is == null)
+                {
+                    RESULT = null;
+                }
             :}
         | repeat_stmt:rs 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10b");
+                        System.out.println("\t regla 10b");                
                 RESULT = rs;
+                if(rs == null)
+                {
+                    RESULT = null;
+                }
             :}
         | assign_stmt:as 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10c");
+                        System.out.println("\t regla 10c");                
                 RESULT = as;
+                if(as == null)
+                {
+                    RESULT = null;
+                }
             :}
         | read_stmt:rs 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10d");
-                RESULT = rs;
+                        System.out.println("\t regla 10d");                
+                RESULT = rs;    
+                if(rs == null)
+                {
+                    RESULT = null;
+                }
             :}
         | write_stmt:ws
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10e");
+                        System.out.println("\t regla 10e");                
                 RESULT = ws;
+                if(ws == null)
+                {
+                    RESULT = null;
+                }
             :}
         | decl_stmt:ds 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10f");
+                        System.out.println("\t regla 10f");                
                 RESULT = ds;
+                if(ds == null)
+                {
+                    RESULT = null;
+                }
             :}
         | func_call:fc
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10g");
+                        System.out.println("\t regla 10g");                
                 RESULT = fc;
+                if(fc == null)
+                {
+                    RESULT = null;
+                }
             :}
         | for_stmt:fs
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10h");
+                        System.out.println("\t regla 10h");                
                 RESULT = fs;
+                if(fs == null)
+                {
+                    RESULT = null;
+                }
             :}
         | return_stmt:rs 
             {:
                 if(modoDepuracion)
-                        System.out.println("\t regla 10i");
+                        System.out.println("\t regla 10i");                
                 RESULT = rs;
+                if(rs == null)
+                {
+                    RESULT = null;
+                }
             :}
         | error
             {:
@@ -310,12 +397,32 @@ if_stmt ::= IF exp:ep THEN stmt_seq:ss END
                     if(modoDepuracion)
                         System.out.println("\t regla 11a");
                     RESULT = new NodoIf(ep, ss);
+                    if(ep == null)
+                    {
+                        RESULT = null;
+                    }
+                    if(ss == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | IF exp:ep THEN stmt_seq:ss ELSE stmt_seq:ss2 END
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 11b");
                     RESULT = new NodoIf(ep, ss, ss2);
+                    if(ep == null)
+                    {
+                        RESULT = null;
+                    }
+                    if(ss == null)
+                    {
+                        RESULT = null;
+                    }
+                    if(ss2 == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 repeat_stmt ::= REPEAT stmt_seq:ss UNTIL exp:ep
@@ -323,13 +430,25 @@ repeat_stmt ::= REPEAT stmt_seq:ss UNTIL exp:ep
                 if(modoDepuracion)
                     System.out.println("\t regla 12");
                 RESULT = new NodoRepeat(ss, ep);
+                if(ss == null)
+                {
+                    RESULT = null;
+                }
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 assign_stmt ::= ID:id ASSIGN exp:ep
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 13");
-                RESULT = new NodoAsignacion(id, ep);                
+                RESULT = new NodoAsignacion(id, ep);
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 read_stmt ::= READ ID:id
@@ -344,13 +463,21 @@ write_stmt ::= WRITE exp:ep
                 if(modoDepuracion)
                     System.out.println("\t regla 15");
                 RESULT = new NodoEscribir(ep);
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 decl_stmt ::= var_type:vt decl_var:dv
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 16");                
-                RESULT = new NodoDeclaracion(dv, vt);
+                RESULT = new NodoDeclaracion(dv, vt, ((Scanner)parser.getScanner()).getLine());
+                if(dv == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 decl_var ::= decl_var:dv COMMA decl_name:dn 
@@ -371,38 +498,50 @@ decl_var ::= decl_var:dv COMMA decl_name:dn
                     {
                         RESULT = dn;
                     }
+                    if(dn == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | decl_name:dn
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 18");
                     RESULT = dn;
+                    if(dn == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 decl_name ::= ID:id LSB NUM:nm RSB 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 19a");                    
-                    RESULT = new NodoVariable(id, nm);
+                    RESULT = new NodoVariable(id, nm);                                      
                 :}
             | ID:id
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 19b");
-                    RESULT = new NodoVariable(id);
+                    RESULT = new NodoVariable(id);                    
                 :};
 
 func_call ::= ID:id LPAREN call_args:ca RPAREN 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 20a");
-                    RESULT = new NodoLlamada(id, ca);
+                    RESULT = new NodoLlamada(id, ca);                    
+                    if(ca == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | ID:id LPAREN RPAREN
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 20b");
-                    RESULT = new NodoLlamada(id);
+                    RESULT = new NodoLlamada(id);                    
                 :};
 
 call_args ::= call_args:ca COMMA exp:ep
@@ -422,6 +561,10 @@ call_args ::= call_args:ca COMMA exp:ep
                     else
                     {
                         RESULT = ep;
+                    }                    
+                    if(ep == null)
+                    {
+                        RESULT = null;
                     }
                 :}
             | exp:ep
@@ -429,6 +572,10 @@ call_args ::= call_args:ca COMMA exp:ep
                     if(modoDepuracion)
                         System.out.println("\t regla 21b");
                     RESULT = ep;
+                    if(ep == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 for_stmt ::= FOR LPAREN assign_stmt:as SEMI exp:ep SEMI assign_stmt:as2 RPAREN stmt_seq:ss END
@@ -436,6 +583,22 @@ for_stmt ::= FOR LPAREN assign_stmt:as SEMI exp:ep SEMI assign_stmt:as2 RPAREN s
                 if(modoDepuracion)
                     System.out.println("\t regla 22");
                 RESULT = new NodoFor(as, ep, as2, ss);
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
+                if(as == null)
+                {
+                    RESULT = null;
+                }
+                if(as2 == null)
+                {
+                    RESULT = null;
+                }
+                if(ss == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 return_stmt ::= RETURN exp:ep
@@ -443,6 +606,10 @@ return_stmt ::= RETURN exp:ep
                 if(modoDepuracion)
                     System.out.println("\t regla 23");
                 RESULT = new NodoReturn(ep);
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 exp ::= exp:ep OR log_exp:le 
@@ -450,12 +617,20 @@ exp ::= exp:ep OR log_exp:le
             if(modoDepuracion)
                     System.out.println("\t regla 24a");
             RESULT = new NodoOperacion(ep, tipoOp.ologico, le);
+            if(le == null)
+            {
+                RESULT = null;
+            }
         :}
     | log_exp:le
         {:
             if(modoDepuracion)
                     System.out.println("\t regla 24b");
             RESULT = le;
+            if(le == null)
+            {
+                RESULT = null;
+            }
         :};
 
 log_exp ::= log_exp:le AND cmp_exp:ce 
@@ -463,12 +638,20 @@ log_exp ::= log_exp:le AND cmp_exp:ce
                 if(modoDepuracion)
                     System.out.println("\t regla 25a");
                 RESULT = new NodoOperacion(le, tipoOp.ylogico, ce);
+                if(ce == null)
+                {
+                    RESULT = null;
+                }
             :}
         | cmp_exp:ce
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 25b");
                 RESULT = ce;
+                if(ce == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 cmp_exp ::= simple_exp:se LT simple_exp:se2 
@@ -476,42 +659,94 @@ cmp_exp ::= simple_exp:se LT simple_exp:se2
                 if(modoDepuracion)
                     System.out.println("\t regla 26a");
                 RESULT = new NodoOperacion(se, tipoOp.menor, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se EQ simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26b");
                 RESULT = new NodoOperacion(se, tipoOp.igual, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se GT simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26c");
                 RESULT = new NodoOperacion(se, tipoOp.mayor, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se NE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26d");
                 RESULT = new NodoOperacion(se, tipoOp.diferente, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se GE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26e");
                 RESULT = new NodoOperacion(se, tipoOp.mayorigual, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se LE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26f");
                 RESULT = new NodoOperacion(se, tipoOp.menorigual, se2);
+                if(se == null)
+                {
+                    RESULT = null;
+                }
+                if(se2 == null)
+                {
+                    RESULT = null;
+                }
             :}
         | simple_exp:se        
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26g");
                 RESULT = se;
+                if(se == null)
+                {
+                    RESULT = null;
+                }
             :};
 
 simple_exp ::= simple_exp:se PLUS term:tm 
@@ -519,18 +754,30 @@ simple_exp ::= simple_exp:se PLUS term:tm
                     if(modoDepuracion)
                         System.out.println("\t regla 27a");
                     RESULT = new NodoOperacion(se, tipoOp.mas, tm);
+                    if(tm == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | simple_exp:se MINUS term:tm 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 27b");
                     RESULT = new NodoOperacion(se, tipoOp.menos, tm);
+                    if(tm == null)
+                    {
+                        RESULT = null;
+                    }
                 :}
             | term:tm
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 27c");
                     RESULT = tm;
+                    if(tm == null)
+                    {
+                        RESULT = null;
+                    }
                 :};
 
 term ::= term:tm TIMES factor:ft 
@@ -538,18 +785,30 @@ term ::= term:tm TIMES factor:ft
                 if(modoDepuracion)
                     System.out.println("\t regla 28a");
                 RESULT = new NodoOperacion(tm, tipoOp.por, ft);
+                if(ft == null)
+                {
+                    RESULT = null;
+                }
             :}
         | term:tm OVER factor:ft 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 28b");
                 RESULT = new NodoOperacion(tm, tipoOp.entre, ft);
+                if(ft == null)
+                {
+                    RESULT = null;
+                }
             :}
         | factor:ft
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 28c");
                 RESULT = ft;
+                if(ft == null)
+                {
+                    RESULT = null;
+                }                
             :};
 
 factor ::= LPAREN exp:ep RPAREN 
@@ -557,12 +816,20 @@ factor ::= LPAREN exp:ep RPAREN
                 if(modoDepuracion)
                     System.out.println("\t regla 29a");
                 RESULT = ep;
+                if(ep == null)
+                {
+                    RESULT = null;
+                }
             :}
         | func_call:fc 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 29b");
                 RESULT = fc;
+                if(fc == null)
+                {
+                    RESULT = null;
+                }
             :}
         | NUM:nm 
             {:
@@ -592,6 +859,6 @@ factor ::= LPAREN exp:ep RPAREN
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 29g");
-                System.out.println("Ocurrió error en cup # 0003");
+                System.out.println("Ocurrió error en cup # 0003");                
                 RESULT = null;
             :};

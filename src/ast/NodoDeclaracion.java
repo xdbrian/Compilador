@@ -5,6 +5,7 @@ public class NodoDeclaracion extends NodoBase {
     
     private tipoVariable tipo;   
     private NodoBase variable;
+    private int numLinea;
     
     public tipoVariable getTipo() {
         return tipo;
@@ -14,11 +15,12 @@ public class NodoDeclaracion extends NodoBase {
         return variable;
     }
     
-    public NodoDeclaracion(NodoBase variable, tipoVariable tipo)
+    public NodoDeclaracion(NodoBase variable, tipoVariable tipo, int numLinea)
     {
         super();
         this.variable = variable;
         this.tipo = tipo;
+        this.numLinea = numLinea;
     }
     
     public NodoDeclaracion(NodoVariable variable)
@@ -26,4 +28,9 @@ public class NodoDeclaracion extends NodoBase {
         super();
         this.variable = variable;
     }
+
+    public int getNumLinea() {
+        return numLinea;
+    }
+    
 }
