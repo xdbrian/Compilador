@@ -1,20 +1,25 @@
 void funcionuno()
 begin
         int alto, ancho;
-	write 5 * 6;
+	write 5 * 6;        
 end
 int funciondos(int x, boolean y)
 begin
         boolean esCuadrado, w;
         int wa;
-        x := 0;
-	return 1;        
+        x := 0;        
+        return 1;
 end
 begin
         int w[4];	
 	boolean a;
         int s, z;
-        if true then
+        repeat
+            write 1;
+        until true;
+        a := true and a;
+        s := 5 + funciondos(2 + funciondos(1, false), true);
+        for (s := 1; s < 10 ; s := s + 1)
             write 1;
         end;        
 end
