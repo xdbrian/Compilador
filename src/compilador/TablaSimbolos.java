@@ -53,6 +53,7 @@ public class TablaSimbolos {
                     while (cuerpo != null) {
                         if (cuerpo instanceof NodoReturn) {
                             tieneReturn = true;
+                            break;
                         }
                         cuerpo = cuerpo.getHermanoDerecha();
                     }
@@ -133,7 +134,7 @@ public class TablaSimbolos {
                 if (tipoCondicion != tipoVariable.booleano) {
                     System.out.println("La sentencia for debe evaluar una condición booleana.");
                     System.exit(0);
-                }                
+                }
             } else if (raiz instanceof NodoLlamada) {
                 String identificador = ((NodoLlamada) raiz).getNombre();
                 if (buscarAmbito(identificador) == null) {
@@ -141,6 +142,10 @@ public class TablaSimbolos {
                     System.exit(0);
                 }
                 cargarTabla(((NodoLlamada) raiz).getArgumento());
+                if (identificador.equals(ambito)) {
+                    System.out.println("No se permiten llamadas recursivas a funciones.");
+                    System.exit(0);
+                }
                 NodoBase nodo = ((NodoLlamada) raiz).getArgumento();
                 int cantidadArgumentos = 0;
                 while (nodo != null) {
@@ -192,6 +197,10 @@ public class TablaSimbolos {
                     System.out.println("La variable " + identificador + " no ha sido definida.");
                     System.exit(0);
                 }
+                if (determinarTipo(identificador) != tipoVariable.entero) {
+                    System.out.println("La sentencia read solo acepta variables de tipo entero.");
+                    System.exit(0);
+                }
             }
             raiz = raiz.getHermanoDerecha();
         }
@@ -216,6 +225,7 @@ public class TablaSimbolos {
         }
         LinkedHashMap<String, RegistroSimbolo> parametros = new LinkedHashMap<>();
         NodoDeclaracion parametro = (NodoDeclaracion) nodo.getArgumento();
+        int direccionFuncion = direccion++;        
         while (parametro != null) {
             if (parametros.containsKey(((NodoVariable) parametro.getVariable()).getNombre())) {
                 System.out.println("La variable " + ((NodoVariable) parametro.getVariable()).getNombre() + " ya ha sido definida en este ámbito. Línea " + parametro.getNumLinea() + ".");
@@ -224,7 +234,7 @@ public class TablaSimbolos {
             parametros.put(((NodoVariable) parametro.getVariable()).getNombre(), new RegistroSimbolo(parametro.getTipo(), parametro.getNumLinea(), direccion++));
             parametro = (NodoDeclaracion) parametro.getHermanoDerecha();
         }
-        tabla.put(ambito, new RegistroFuncion(nodo.getTipoRetorno(), parametros));
+        tabla.put(ambito, new RegistroFuncion(nodo.getTipoRetorno(), parametros, direccionFuncion));
         return true;
     }
 
@@ -236,8 +246,8 @@ public class TablaSimbolos {
         return simbolo;
     }
 
-    public RegistroFuncion buscarAmbito(String _ambito) {
-        return tabla.get(_ambito);
+    public RegistroFuncion buscarAmbito(String ambito) {
+        return tabla.get(ambito);
     }
 
     public void imprimirClaves() {
@@ -248,6 +258,14 @@ public class TablaSimbolos {
         for (Iterator<String> it = tabla.keySet().iterator(); it.hasNext();) {
             ambito = (String) it.next();
             System.out.println("Ámbito: " + ambito);
+            if (buscarAmbito(ambito).getParametros().size() > 0) {
+                System.out.println("\t Parámetros:");
+                for (Iterator<String> it2 = tabla.get(ambito).getParametros().keySet().iterator(); it2.hasNext();) {
+                    String identificador = (String) it2.next();
+                    RegistroSimbolo simbolo = buscarSimbolo(identificador);
+                    System.out.println("\t\t Identificador: " + identificador + ", tipo: " + simbolo.getTipo() + ", número de línea: " + simbolo.getNumLinea() + ", direccion: " + simbolo.getDireccionMemoria());
+                }
+            }
             for (Iterator<String> it2 = tabla.get(ambito).getTabla().keySet().iterator(); it2.hasNext();) {
                 String identificador = (String) it2.next();
                 RegistroSimbolo simbolo = buscarSimbolo(identificador);
@@ -256,9 +274,18 @@ public class TablaSimbolos {
         }
     }
 
-//    public int getDireccion(String Clave) {
-//        return buscarSimbolo(Clave).getDireccionMemoria();
-//    }
+    public int getDireccion(String clave) {
+        if (clave == null) {
+            clave = "main";
+        }
+        RegistroSimbolo simbolo = buscarSimbolo(clave);
+        if (simbolo != null) {
+            return simbolo.getDireccionMemoria();
+        }
+        RegistroFuncion funcion = buscarAmbito(clave);
+        return funcion.getDireccionMemoria();
+    }
+
     private tipoVariable determinarTipo(Object nodo) {
         if (nodo instanceof String) {
             return buscarSimbolo((String) nodo).getTipo();
@@ -361,6 +388,10 @@ public class TablaSimbolos {
     }
 
     public void setAmbito(String ambito) {
-        this.ambito = ambito;
+        if (ambito == null) {
+            this.ambito = "main";
+        } else {
+            this.ambito = ambito;
+        }
     }
 }

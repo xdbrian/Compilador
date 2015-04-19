@@ -4,7 +4,7 @@ import ast.*;
 import java_cup.runtime.*;
 
 public class Compilador {
-    
+
     public static void main(String[] args) throws Exception {
         @SuppressWarnings("deprecation")
         SymbolFactory sf = new DefaultSymbolFactory();
@@ -14,7 +14,6 @@ public class Compilador {
         } else {
             parser_obj = new parser(new Scanner(new java.io.FileInputStream(args[0]), sf), sf);
         }
-
         UtGen.debug = true; //NO muestro mensajes de depuracion del generador (UTGen) para que el codigo sea compatible con la version visual de la TM
         //Para ver depuracion de analisis sintactico se debe ir al parser.java y colocar modoDepuracion en true
         parser_obj.parse();
@@ -26,10 +25,9 @@ public class Compilador {
         System.out.println();
         TablaSimbolos ts = new TablaSimbolos();
         ts.cargarTabla(root);
-        ts.imprimirClaves();        
-//	    //REALIZAR ACA ANALISIS SEMANTICO
-//		Generador.setTablaSimbolos(ts);
-//		Generador.generarCodigoObjeto(root);
+        ts.imprimirClaves();
+        Generador.setTablaSimbolos(ts);
+        Generador.generarCodigoObjeto(root);
     }
 
 }
