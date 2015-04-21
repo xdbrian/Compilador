@@ -1,13 +1,5 @@
 begin
-    int x;
-    x := 5;
-    if true then
-        if x < 10 then
-            write x - 1;
-            x := x + 1;
-        else
-            write x;
-        end;
-    end;
+    int x, y[10], z;
+    y[5] := 1;    
 end
 	

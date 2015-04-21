@@ -2,7 +2,7 @@ package ast;
 
 public class NodoIdentificador extends NodoBase {
     
-    private String nombre;
+    private String nombre;    
     
     public NodoIdentificador(String nombre) {
             super();
@@ -11,7 +11,7 @@ public class NodoIdentificador extends NodoBase {
     
     public NodoIdentificador() {
             super();
-    }
+    }  
 
     public String getNombre() {
             return nombre;

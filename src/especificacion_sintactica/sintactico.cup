@@ -443,9 +443,19 @@ repeat_stmt ::= REPEAT stmt_seq:ss UNTIL exp:ep
 assign_stmt ::= ID:id ASSIGN exp:ep
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 13");
+                    System.out.println("\t regla 13a");
                 RESULT = new NodoAsignacion(id, ep);
                 if(ep == null)
+                {
+                    RESULT = null;
+                }
+            :}
+            | ID:id LSB exp:ep RSB ASSIGN exp:ep2
+            {:
+                if(modoDepuracion)
+                    System.out.println("\t regla 13b");
+                RESULT = new NodoAsignacion(id, ep2, ep);
+                if(ep == null || ep2 == null)
                 {
                     RESULT = null;
                 }

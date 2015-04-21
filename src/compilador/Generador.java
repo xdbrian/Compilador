@@ -76,6 +76,7 @@ public class Generador {
             UtGen.emitirComentario("Retorno:");
         }
         generar(((NodoReturn) nodo).getValor());
+        UtGen.emitirRM("LDA", UtGen.PC, 0, UtGen.AC2, "Saltar a la dirección guardada en AC2.");
     }
 
     private static void generarLlamada(NodoBase nodo) {
@@ -95,18 +96,18 @@ public class Generador {
                 generarValor(n);
             } else if (n instanceof NodoLlamada) {
                 generarLlamada(n);
-            }            
-            UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en " + (UtGen.MP + desplazamientoTmp + 1) + " el valor de AC.");            
+            }
+            UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en " + (UtGen.MP + desplazamientoTmp + 1) + " el valor de AC.");
             n = n.getHermanoDerecha();
         }
         for (int i = tablaSimbolos.buscarAmbito(identificador).getParametros().size() - 1; i >= 0; i--) {
             int direccion = ((RegistroSimbolo) tablaSimbolos.buscarAmbito(identificador).getParametros().values().toArray()[i]).getDireccionMemoria();
-            UtGen.emitirRM("LD", UtGen.AC, ++desplazamientoTmp, UtGen.MP, "Cargar en AC el valor de temporal.");            
+            UtGen.emitirRM("LD", UtGen.AC, ++desplazamientoTmp, UtGen.MP, "Cargar en AC el valor de temporal.");
             UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "Guardar en " + direccion + " el valor de AC.");
         }
         int localidadFuncion = tablaSimbolos.buscarAmbito(identificador).getDireccionMemoria();
         UtGen.emitirRM("LDA", UtGen.AC2, 1, UtGen.PC, "Cargar en AC2 la dirección de retorno.");
-        UtGen.emitirRM("LD", UtGen.PC, localidadFuncion, UtGen.GP, "Saltar a la función " + identificador + ".");        
+        UtGen.emitirRM("LD", UtGen.PC, localidadFuncion, UtGen.GP, "Saltar a la función " + identificador + ".");
         UtGen.emitirRM("ST", UtGen.AC3, desplazamientoTmp--, UtGen.MP, "Guardar en " + (UtGen.MP + desplazamientoTmp + 1) + " el valor de AC.");
     }
 
@@ -193,7 +194,22 @@ public class Generador {
         }
         generar(n.getExpresion());
         direccion = tablaSimbolos.getDireccion(n.getIdentificador());
-        UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "Guardar en " + direccion + " el valor de AC.");
+        if (n.getPosicion() != null) {
+            UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
+            generar(n.getPosicion());
+            UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
+            UtGen.emitirRM("LDC", UtGen.AC, direccion, 0, "Esta es la direccion ");
+            UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.MP, "Cargar en AC1 el valor de " + (UtGen.MP + desplazamientoTmp) + ".");
+            UtGen.emitirRO("ADD", UtGen.AC, UtGen.AC1, UtGen.AC, "Guardar en AC el valor de AC1 más AC.");
+            UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.MP, "Cargar en AC1 el valor de " + (UtGen.MP + desplazamientoTmp) + ".");
+            UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
+            UtGen.emitirRM("ST", UtGen.AC1, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
+            UtGen.emitirRM("LD", UtGen.AC, ++desplazamientoTmp, UtGen.MP, "Cargar en AC1 el valor de " + (UtGen.MP + desplazamientoTmp) + ".");
+            UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.MP, "Cargar en AC1 el valor de " + (UtGen.MP + desplazamientoTmp) + ".");            
+            UtGen.emitirRM("ST", UtGen.AC, 0, UtGen.AC1, "Guardar en " + direccion + " el valor de AC.");
+        } else {
+            UtGen.emitirRM("ST", UtGen.AC, direccion, UtGen.GP, "Guardar en " + direccion + " el valor de AC.");
+        }
     }
 
     private static void generarLeer(NodoBase nodo) {
@@ -239,7 +255,7 @@ public class Generador {
 
     private static void generarOperacion(NodoBase nodo) {
         NodoOperacion n = (NodoOperacion) nodo;
-        generar(n.getOpIzquierdo());        
+        generar(n.getOpIzquierdo());
         UtGen.emitirRM("ST", UtGen.AC, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
         generar(n.getOpDerecho());
         UtGen.emitirRM("LD", UtGen.AC1, ++desplazamientoTmp, UtGen.MP, "Cargar en AC1 el valor de " + (UtGen.MP + desplazamientoTmp) + ".");
