@@ -44,12 +44,7 @@ public class NodoFuncion extends NodoBase {
     public NodoFuncion(NodoBase cuerpo)
     {
         super();
+        this.tipoRetorno = tipoVariable.vacio;
         this.cuerpo = cuerpo;
     }
-    
-    public NodoFuncion()
-    {
-        super();        
-    }
-    
 }

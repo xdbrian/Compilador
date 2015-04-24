@@ -4,7 +4,7 @@ package ast;
 public class NodoDeclaracion extends NodoBase {
     
     private tipoVariable tipo;   
-    private NodoBase variable;
+    private NodoBase variable;    
     
     public tipoVariable getTipo() {
         return tipo;
@@ -18,12 +18,12 @@ public class NodoDeclaracion extends NodoBase {
     {
         super();
         this.variable = variable;
-        this.tipo = tipo;
+        this.tipo = tipo;        
     }
     
     public NodoDeclaracion(NodoVariable variable)
     {
         super();
         this.variable = variable;
-    }
+    }    
 }

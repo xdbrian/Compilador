@@ -15,12 +15,15 @@ import java_cup.runtime.*;
 		this(r);
 		this.sf=sf;
 		lineanum=0;
-		debug=true;
+		debug=false;
 	}
 	private SymbolFactory sf;
 	private int lineanum;
 	private boolean debug;
 
+        int getLine(){
+            return yyline + 1;
+        }
 %}
 
 %eofval{
@@ -147,8 +150,8 @@ espacio		= [ \t]+
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new Integer(yytext()));
 			}
-{identificador}	{	if(debug) System.out.println("token ID");
-				return sf.newSymbol("ID",sym.ID,new String(yytext()));
+{identificador}	{	if(debug) System.out.println("token ID");                        
+			return sf.newSymbol("ID",sym.ID,new String(yytext()));
 			}
 {nuevalinea}       {lineanum++;}
 {espacio}    { /* saltos espacios en blanco*/}

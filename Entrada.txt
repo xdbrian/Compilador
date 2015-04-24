@@ -1,12 +1,30 @@
-void funcionuno()
+int a(int x, int y)
 begin
-	write 5 * 6;
+    int z;
+    z := x + y;
+    return z;
 end
-int funciondos(int x, boolean y)
+int b(int x)
 begin
-	return 1;
+    int y;
+    y := 2 - a(x, 2);
+    return y;
+end
+int c(int x)
+begin
+    int y[100];
+    y[0] := 2 * b(x);
+    return y[0];
+end
+int d(int x)
+begin
+    int y;
+    y := 4 / c(x);
+    return y; 
 end
 begin
-	int x;
+    int x;
+    x := d(2);
+    write x;    
 end
 	
