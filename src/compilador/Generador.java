@@ -87,7 +87,7 @@ public class Generador {
         UtGen.emitirRM("ST", UtGen.AC2, desplazamientoTmp--, UtGen.MP, "Guardar en temporal el valor de AC.");
         String identificador = ((NodoLlamada) nodo).getNombre();
         NodoBase n = ((NodoLlamada) nodo).getArgumento();        
-        for (int i = tablaSimbolos.buscarAmbito(identificador).getParametros().size() - 1; i >= 0 && n != null; i--) {
+        for (int i = 0; i < tablaSimbolos.buscarAmbito(identificador).getParametros().size() && n != null; i++) {
             int direccion = ((RegistroSimbolo) tablaSimbolos.buscarAmbito(identificador).getParametros().values().toArray()[i]).getDireccionMemoria();
             if (n instanceof NodoOperacion) {
                 generarOperacion(n);
