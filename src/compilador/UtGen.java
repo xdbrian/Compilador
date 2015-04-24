@@ -1,5 +1,9 @@
 package compilador;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 /* La idea principal de esta clase (Utilidades de Generacion)es ayudar a emitir las 
  * sentencias en el asembler de la Tiny Machine (TM), haciendo mas sencilla la 
  * implementacion de un generador de codigo objeto para la misma.
@@ -8,9 +12,10 @@ package compilador;
  */
 public class UtGen {
 
-    private static int instruccionActual = 0;	//Direccion (num linea) actual de emision de la instruccion
-    private static int instruccionMasAlta = 0;	//Almacena la direccion de la instruccion que ha resultado ser la mayor hasta ahora 
+    private static int instruccionActual = 0;
+    private static int instruccionMasAlta = 0;
     public static boolean debug = false;
+    private static FileWriter archivoSalida;
 
     /* PC = program counter, registro[7] donde se almacena la direccion (linea)
      *  actual de ejecucion del codigo objeto 
@@ -32,17 +37,21 @@ public class UtGen {
 
     /* Defino al registro[1] como el acumulador 2 */
     public static int AC1 = 1;
-    
+
+    /* Defino al registro[2] como el acumulador 2 */
     public static int AC2 = 2;
-    
+
+    /* Defino al registro[3] como el acumulador 2 */
     public static int AC3 = 3;
-    
+
+    /* Defino al registro[4] como el acumulador 2 */
     public static int AC4 = 4;
 
     public static void emitirComentario(String c) {
         if (debug) {
             System.out.println("*      " + c);
         }
+
     }
 
     /* Este procedimiento emite sentencias RO (Solo Registro)
@@ -56,7 +65,37 @@ public class UtGen {
      * c = comentario a emitir en modo debug
      */
     public static void emitirRO(String op, int r, int s, int t, String c) {
-        System.out.print((instruccionActual++) + ":       " + op + "       " + r + "," + s + "," + t);
+        if (archivoSalida == null) {
+            try {
+                archivoSalida = new FileWriter("salida.tm");
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + s + "," + t);
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de crear el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        } else {
+            try {
+                archivoSalida = new FileWriter("salida.tm", true);
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + s + "," + t);
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de abrir el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        }
+        System.out.print((instruccionActual) + ":       " + op + "       " + r + "," + s + "," + t);
+        instruccionActual++;
         if (debug) {
             System.out.print("      " + c);
         }
@@ -77,7 +116,37 @@ public class UtGen {
      * c = comentario a emitir en modo debug
      */
     public static void emitirRM(String op, int r, int d, int s, String c) {
-        System.out.print((instruccionActual++) + ":       " + op + "       " + r + "," + d + "(" + s + ")");
+        if (archivoSalida == null) {
+            try {
+                archivoSalida = new FileWriter("salida.tm");
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + d + "(" + s + ")");
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de crear el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        } else {
+            try {
+                archivoSalida = new FileWriter("salida.tm", true);
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + d + "(" + s + ")");
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de abrir el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        }
+        System.out.print((instruccionActual) + ":       " + op + "       " + r + "," + d + "(" + s + ")");
+        instruccionActual++;
         if (debug) {
             System.out.print("      " + c);
         }
@@ -99,10 +168,10 @@ public class UtGen {
         }
         return anterior;
     }
+
     /* La funcion cargar respaldo, cambia la direccion de emision de codigo actual, 
      * a una localidad que haya sido obviada (saltada) cuando se emitio un salto.  
      */
-
     public static void cargarRespaldo(int direccion) {
         if (instruccionActual > instruccionMasAlta) {
             emitirComentario("BUG encontrado en la funcion cargarRespaldo");
@@ -128,6 +197,35 @@ public class UtGen {
      * c = comentario a emitir en modo debug
      */
     public static void emitirRM_Abs(String op, int r, int a, String c) {
+        if (archivoSalida == null) {
+            try {
+                archivoSalida = new FileWriter("salida.tm");
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + (a - (instruccionActual + 1)) + "(" + PC + ")");
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de crear el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        } else {
+            try {
+                archivoSalida = new FileWriter("salida.tm", true);
+                PrintWriter pw = new PrintWriter(archivoSalida);
+                pw.println((instruccionActual) + ":       " + op + "       " + r + "," + (a - (instruccionActual + 1)) + "(" + PC + ")");
+            } catch (Exception ex) {
+                System.out.println("Ocurrió un error al tratar de abrir el archivo.");
+            } finally {
+                try {
+                    archivoSalida.close();
+                } catch (IOException ex) {
+                    System.out.println("Ocurrió un error al tratar de cerrar el archivo.");
+                }
+            }
+        }
         System.out.print((instruccionActual) + ":       " + op + "       " + r + "," + (a - (instruccionActual + 1)) + "(" + PC + ")");
         ++instruccionActual;
         if (debug) {
@@ -138,6 +236,4 @@ public class UtGen {
             instruccionMasAlta = instruccionActual;
         }
     }
-
-    /*TODO: Cambiar emision por pantalla por stream*/
 }

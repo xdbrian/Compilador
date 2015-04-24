@@ -4,8 +4,7 @@ package ast;
 public class NodoDeclaracion extends NodoBase {
     
     private tipoVariable tipo;   
-    private NodoBase variable;
-    private int numLinea;
+    private NodoBase variable;    
     
     public tipoVariable getTipo() {
         return tipo;
@@ -15,22 +14,16 @@ public class NodoDeclaracion extends NodoBase {
         return variable;
     }
     
-    public NodoDeclaracion(NodoBase variable, tipoVariable tipo, int numLinea)
+    public NodoDeclaracion(NodoBase variable, tipoVariable tipo)
     {
         super();
         this.variable = variable;
-        this.tipo = tipo;
-        this.numLinea = numLinea;
+        this.tipo = tipo;        
     }
     
     public NodoDeclaracion(NodoVariable variable)
     {
         super();
         this.variable = variable;
-    }
-
-    public int getNumLinea() {
-        return numLinea;
-    }
-    
+    }    
 }

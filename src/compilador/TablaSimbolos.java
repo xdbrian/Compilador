@@ -21,15 +21,15 @@ public class TablaSimbolos {
                 tipoVariable tipo = ((NodoDeclaracion) raiz).getTipo();
                 String identificador = ((NodoVariable) (((NodoDeclaracion) raiz).getVariable())).getNombre();
                 int tamano = ((NodoVariable) ((NodoDeclaracion) raiz).getVariable()).getTamano();
-                int numeroLinea = ((NodoDeclaracion) raiz).getNumLinea();
+                int numeroLinea = ((NodoDeclaracion) raiz).getVariable().getNumeroLinea();
                 if (!insertarSimbolo(identificador, tipo, numeroLinea, tamano)) {
                     System.out.println("La variable " + identificador + " ya ha sido definida en este ámbito. Línea " + numeroLinea + ".");
                     System.exit(0);
                 }
-                NodoVariable nodo = (NodoVariable) (((NodoVariable) (((NodoDeclaracion) raiz).getVariable())).getHermanoDerecha());
+                NodoVariable nodo = (NodoVariable) ((NodoDeclaracion) raiz).getVariable().getHermanoDerecha();
                 while (nodo != null) {
-                    if (!insertarSimbolo(nodo.getNombre(), tipo, numeroLinea, nodo.getTamano())) {
-                        System.out.println("La variable " + nodo.getNombre() + " ya ha sido definida en este ámbito. Línea " + numeroLinea + ".");
+                    if (!insertarSimbolo(nodo.getNombre(), tipo, ((NodoBase) nodo).getNumeroLinea(), nodo.getTamano())) {
+                        System.out.println("La variable " + nodo.getNombre() + " ya ha sido definida en este ámbito. Línea " + ((NodoBase) nodo).getNumeroLinea() + ".");
                         System.exit(0);
                     }
                     nodo = (NodoVariable) nodo.getHermanoDerecha();
@@ -40,12 +40,12 @@ public class TablaSimbolos {
                     ambito = "main";
                 }
                 if (!insertarAmbito((NodoFuncion) raiz)) {
-                    System.out.println("La función " + ((NodoFuncion) raiz).getNombre() + " ya ha sido definida.");
+                    System.out.println("La función " + ((NodoFuncion) raiz).getNombre() + " ya ha sido definida. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
                 cargarTabla(((NodoFuncion) raiz).getCuerpo());
                 if (((NodoFuncion) raiz).getNombre() != null && ((NodoFuncion) raiz).getNombre().equals("main")) {
-                    System.out.println("No se puede definir una función con nombre main.");
+                    System.out.println("No se puede definir una función con nombre main. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
                 if (((NodoFuncion) raiz).getTipoRetorno() != tipoVariable.vacio) {
@@ -59,7 +59,7 @@ public class TablaSimbolos {
                         cuerpo = cuerpo.getHermanoDerecha();
                     }
                     if (!tieneReturn) {
-                        System.out.println("La función " + ((NodoFuncion) raiz).getNombre() + " debe regresar un valor.");
+                        System.out.println("La función " + ((NodoFuncion) raiz).getNombre() + " debe regresar un valor. Línea " + raiz.getNumeroLinea() + ".");
                         System.exit(0);
                     }
                 }
@@ -77,7 +77,7 @@ public class TablaSimbolos {
                     tipoPrueba = determinarTipo(((NodoIf) raiz).getPrueba());
                 }
                 if (tipoPrueba != tipoVariable.booleano) {
-                    System.out.println("La sentencia if debe evaluar una condición booleana.");
+                    System.out.println("La sentencia if debe evaluar una condición booleana. Linea " + ((NodoIf) raiz).getPrueba().getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoRepeat) {
@@ -90,17 +90,13 @@ public class TablaSimbolos {
                     tipoPrueba = determinarTipo(((NodoRepeat) raiz).getPrueba());
                 }
                 if (tipoPrueba != tipoVariable.booleano) {
-                    System.out.println("La sentencia repeat debe evaluar una condición booleana.");
+                    System.out.println("La sentencia repeat debe evaluar una condición booleana. Línea " + ((NodoRepeat) raiz).getPrueba().getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoAsignacion) {
-                String identificador = ((NodoAsignacion) raiz).getIdentificador();
-                if (buscarSimbolo(identificador) == null) {
-                    System.out.println("La variable " + identificador + " no ha sido definida.");
-                    System.exit(0);
-                }
+                cargarTabla(((NodoAsignacion) raiz).getIdentificador());
                 cargarTabla(((NodoAsignacion) raiz).getExpresion());
-                cargarTabla(((NodoAsignacion) raiz).getPosicion());
+                String identificador = ((NodoIdentificador) ((NodoAsignacion) raiz).getIdentificador()).getNombre();
                 tipoVariable tipoDestino = determinarTipo(identificador);
                 tipoVariable tipoOrigen;
                 if (((NodoAsignacion) raiz).getExpresion() instanceof NodoOperacion) {
@@ -109,32 +105,13 @@ public class TablaSimbolos {
                     tipoOrigen = determinarTipo(((NodoAsignacion) raiz).getExpresion());
                 }
                 if (tipoOrigen != tipoDestino) {
-                    System.out.println("No se puede convertir " + tipoOrigen + " en " + tipoDestino + ".");
-                    System.exit(0);
-                }
-                if (buscarSimbolo(identificador).getTamano() > 0) {
-                    if (((NodoAsignacion) raiz).getPosicion() == null) {
-                        System.out.println("Debe indicar una posición de asignación para el vector " + identificador + ".");
-                        System.exit(0);
-                    }
-                    tipoVariable tipoPosicion;
-                    if (((NodoAsignacion) raiz).getPosicion() instanceof NodoOperacion) {
-                        tipoPosicion = ((NodoOperacion) ((NodoAsignacion) raiz).getPosicion()).getTipoValor();
-                    } else {
-                        tipoPosicion = determinarTipo(((NodoAsignacion) raiz).getPosicion());
-                    }                    
-                    if (tipoPosicion != tipoVariable.entero) {
-                        System.out.println("Las posiciones de un vector deben venir indicadas por variables enteras.");
-                        System.exit(0);
-                    }
-                } else if (((NodoAsignacion) raiz).getPosicion() != null){
-                    System.out.println("Solo puede especificar posiciones en vectores de variables.");
+                    System.out.println("No se puede convertir " + tipoOrigen + " en " + tipoDestino + ". Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoEscribir) {
                 cargarTabla(((NodoEscribir) raiz).getExpresion());
                 if (determinarTipo(((NodoEscribir) raiz).getExpresion()) != tipoVariable.entero) {
-                    System.out.println("Solo se pueden escribir variables de tipo entero.");
+                    System.out.println("Solo se pueden escribir variables de tipo entero. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoOperacion) {
@@ -142,7 +119,7 @@ public class TablaSimbolos {
                 cargarTabla(((NodoOperacion) raiz).getOpDerecho());
                 determinarTipo(raiz);
                 if (((NodoOperacion) raiz).getTipoValor() == tipoVariable.vacio) {
-                    System.out.println("La operación no es válida entre los tipos especificados.");
+                    System.out.println("La operación no es válida entre los tipos especificados. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoFor) {
@@ -157,25 +134,25 @@ public class TablaSimbolos {
                     tipoCondicion = determinarTipo(((NodoFor) raiz).getCondicion());
                 }
                 if (tipoCondicion != tipoVariable.booleano) {
-                    System.out.println("La sentencia for debe evaluar una condición booleana.");
+                    System.out.println("La sentencia for debe evaluar una condición booleana. Línea " + ((NodoFor) raiz).getCondicion().getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoLlamada) {
                 String identificador = ((NodoLlamada) raiz).getNombre();
                 if (buscarAmbito(identificador) == null) {
-                    System.out.println("La función " + identificador + " no ha sido definida.");
+                    System.out.println("La función " + identificador + " no ha sido definida. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
                 cargarTabla(((NodoLlamada) raiz).getArgumento());
                 if (identificador.equals(ambito)) {
-                    System.out.println("No se permiten llamadas recursivas a funciones.");
+                    System.out.println("No se permiten llamadas recursivas a funciones. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
                 NodoBase nodo = ((NodoLlamada) raiz).getArgumento();
                 int cantidadArgumentos = 0;
                 while (nodo != null) {
                     if (cantidadArgumentos > buscarAmbito(((NodoLlamada) raiz).getNombre()).getParametros().size() - 1) {
-                        System.out.println("El número de parámetros de la función " + identificador + " y la llamada no coindicen.");
+                        System.out.println("El número de parámetros de la función " + identificador + " y la llamada no coindicen. Línea " + raiz.getNumeroLinea() + ".");
                         System.exit(0);
                     }
                     RegistroSimbolo simbolo = (RegistroSimbolo) buscarAmbito(((NodoLlamada) raiz).getNombre()).getParametros().values().toArray()[cantidadArgumentos];
@@ -186,14 +163,14 @@ public class TablaSimbolos {
                         tipoArgumento = determinarTipo(nodo);
                     }
                     if (tipoArgumento != simbolo.getTipo()) {
-                        System.out.println("El tipo del argumento " + (cantidadArgumentos + 1) + " no coincide con el esperado por la función " + identificador + ".");
+                        System.out.println("El tipo del argumento " + (cantidadArgumentos + 1) + " no coincide con el esperado por la función " + identificador + ". Línea " + raiz.getNumeroLinea() + ".");
                         System.exit(0);
                     }
                     cantidadArgumentos++;
                     nodo = nodo.getHermanoDerecha();
                 }
                 if (cantidadArgumentos != buscarAmbito(((NodoLlamada) raiz).getNombre()).getParametros().size()) {
-                    System.out.println("El número de parámetros de la función " + identificador + " y la llamada no coindicen.");
+                    System.out.println("El número de parámetros de la función " + identificador + " y la llamada no coindicen. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoReturn) {
@@ -206,24 +183,44 @@ public class TablaSimbolos {
                     tipoRetorno = determinarTipo(((NodoReturn) raiz).getValor());
                 }
                 if (funcion.getTipoRetorno() != tipoRetorno) {
-                    System.out.println("El tipo de retorno de la función " + ambito + " no coincide con el tipo esperado.");
+                    System.out.println("El tipo de retorno de la función " + ambito + " no coincide con el tipo esperado. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
 
             } else if (raiz instanceof NodoIdentificador) {
+                cargarTabla(((NodoIdentificador) raiz).getPosicion());
                 String identificador = ((NodoIdentificador) raiz).getNombre();
                 if (buscarSimbolo(identificador) == null) {
-                    System.out.println("La variable " + identificador + " no ha sido definida.");
+                    System.out.println("La variable " + identificador + " no ha sido definida. Línea " + raiz.getNumeroLinea() + ".");
+                    System.exit(0);
+                }
+                if (buscarSimbolo(identificador).getTamano() > 0) {
+                    if ((((NodoIdentificador) raiz)).getPosicion() == null) {
+                        System.out.println("Debe indicar una posición de referencia para el vector " + identificador + ". Línea " + raiz.getNumeroLinea() + ".");
+                        System.exit(0);
+                    }
+                    tipoVariable tipoPosicion;
+                    if ((((NodoIdentificador) raiz)).getPosicion() instanceof NodoOperacion) {
+                        tipoPosicion = ((NodoOperacion) (((NodoIdentificador) raiz)).getPosicion()).getTipoValor();
+                    } else {
+                        tipoPosicion = determinarTipo((((NodoIdentificador) raiz)).getPosicion());
+                    }
+                    if (tipoPosicion != tipoVariable.entero) {
+                        System.out.println("Las posiciones de un vector deben venir indicadas por variables enteras. Línea " + raiz.getNumeroLinea() + ".");
+                        System.exit(0);
+                    }
+                } else if ((((NodoIdentificador) raiz)).getPosicion() != null) {
+                    System.out.println("Solo puede especificar posiciones en vectores de variables. Linea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             } else if (raiz instanceof NodoLeer) {
                 String identificador = ((NodoLeer) raiz).getIdentificador();
                 if (buscarSimbolo(identificador) == null) {
-                    System.out.println("La variable " + identificador + " no ha sido definida.");
+                    System.out.println("La variable " + identificador + " no ha sido definida. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
                 if (determinarTipo(identificador) != tipoVariable.entero) {
-                    System.out.println("La sentencia read solo acepta variables de tipo entero.");
+                    System.out.println("La sentencia read solo acepta variables de tipo entero. Línea " + raiz.getNumeroLinea() + ".");
                     System.exit(0);
                 }
             }
@@ -258,10 +255,10 @@ public class TablaSimbolos {
         int direccionFuncion = direccion++;
         while (parametro != null) {
             if (parametros.containsKey(((NodoVariable) parametro.getVariable()).getNombre())) {
-                System.out.println("La variable " + ((NodoVariable) parametro.getVariable()).getNombre() + " ya ha sido definida en este ámbito. Línea " + parametro.getNumLinea() + ".");
+                System.out.println("La variable " + ((NodoVariable) parametro.getVariable()).getNombre() + " ya ha sido definida en este ámbito. Línea " + ((NodoBase) parametro).getNumeroLinea() + ".");
                 System.exit(0);
             }
-            parametros.put(((NodoVariable) parametro.getVariable()).getNombre(), new RegistroSimbolo(parametro.getTipo(), parametro.getNumLinea(), direccion++, 0));
+            parametros.put(((NodoVariable) parametro.getVariable()).getNombre(), new RegistroSimbolo(parametro.getTipo(), ((NodoBase) parametro).getNumeroLinea(), direccion++, 0));
             parametro = (NodoDeclaracion) parametro.getHermanoDerecha();
         }
         tabla.put(ambito, new RegistroFuncion(nodo.getTipoRetorno(), parametros, direccionFuncion));

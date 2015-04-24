@@ -2,34 +2,26 @@ package ast;
 
 public class NodoAsignacion extends NodoBase {
 
-    private String identificador;
-    private NodoBase expresion;
-    private NodoBase posicion;
+    private NodoBase identificador;
+    private NodoBase expresion;        
 
-    public NodoAsignacion(String identificador) {
+    public NodoAsignacion(NodoBase identificador) {
         super();
         this.identificador = identificador;
         this.expresion = null;
     }
 
-    public NodoAsignacion(String identificador, NodoBase expresion) {
+    public NodoAsignacion(NodoBase identificador, NodoBase expresion) {
         super();
         this.identificador = identificador;
         this.expresion = expresion;
     }
-
-    public NodoAsignacion(String identificador, NodoBase expresion, NodoBase posicion) {
-        super();
-        this.identificador = identificador;
-        this.expresion = expresion;
-        this.posicion = posicion;
-    }
-
-    public String getIdentificador() {
+    
+    public NodoBase getIdentificador() {
         return identificador;
     }
 
-    public void setIdentificador(String identificador) {
+    public void setIdentificador(NodoBase identificador) {
         this.identificador = identificador;
     }
 
@@ -39,9 +31,5 @@ public class NodoAsignacion extends NodoBase {
 
     public void setExpresion(NodoBase expresion) {
         this.expresion = expresion;
-    }
-
-    public NodoBase getPosicion() {
-        return posicion;
     }
 }

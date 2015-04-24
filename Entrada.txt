@@ -1,5 +1,30 @@
+int a(int x, int y)
 begin
-    int x, y[10], z;
-    y[5] := 1;    
+    int z;
+    z := x + y;
+    return z;
+end
+int b(int x)
+begin
+    int y;
+    y := 2 - a(x, 2);
+    return y;
+end
+int c(int x)
+begin
+    int y[100];
+    y[0] := 2 * b(x);
+    return y[0];
+end
+int d(int x)
+begin
+    int y;
+    y := 4 / c(x);
+    return y; 
+end
+begin
+    int x;
+    x := d(2);
+    write x;    
 end
 	

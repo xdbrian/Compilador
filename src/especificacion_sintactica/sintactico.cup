@@ -94,11 +94,7 @@ program ::= program_struct:ps
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 1"); 
-                    ast = ps;
-                    if(ps == null)
-                    {
-                        RESULT = null;
-                    }
+                    ast = ps;                    
                 :};
 
 program_struct ::= funcs_seq:fs main_program:mp
@@ -119,37 +115,21 @@ program_struct ::= funcs_seq:fs main_program:mp
                         {
                             RESULT = mp;
                         }
-                        if(mp == null)
-                        {
-                            RESULT = null;
-                        }
                     :}
                 | main_program:mp
                     {:
                         if(modoDepuracion)
                             System.out.println("\t regla 2b");
                         RESULT = mp;
-                        if(mp == null)
-                        {
-                            RESULT = null;
-                        }
                     :};
 
 main_program ::= BEGIN stmt_seq:ss END
                     {:
                         if(modoDepuracion)
-                            System.out.println("\t regla 3a");
-                        RESULT = new NodoFuncion(ss);
-                        if(ss == null)
-                        {
-                            RESULT = null;
-                        }
-                    :}
-                | BEGIN END
-                    {:
-                        if(modoDepuracion)
-                            System.out.println("\t regla 3b");
-                        RESULT = new NodoFuncion();
+                            System.out.println("\t regla 3");
+                        NodoFuncion nodo = new NodoFuncion(ss);
+                        ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                        RESULT = nodo;
                     :};
 
 funcs_seq ::= funcs_seq:fs func:ft
@@ -170,41 +150,29 @@ funcs_seq ::= funcs_seq:fs func:ft
                     {
                         RESULT = ft;
                     }
-                    if(ft == null)
-                    {
-                        RESULT = null;
-                    }
                 :}
             | func:ft
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 4b");
                     RESULT = ft;
-                    if(ft == null)
-                    {
-                        RESULT = null;
-                    }
                 :};
 
 func ::= func_type:ft ID:id LPAREN func_args:fa RPAREN BEGIN stmt_seq:ss END
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 5a");                
-                RESULT = new NodoFuncion(ft, ss, fa, id);
-                if(ss == null)
-                {
-                    RESULT = null;
-                }
+                    System.out.println("\t regla 5a");
+                NodoFuncion nodo = new NodoFuncion(ft, ss, fa, id);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | func_type:ft ID:id LPAREN RPAREN BEGIN stmt_seq:ss END
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 5b");                
-                RESULT = new NodoFuncion(ft, ss, id);
-                if(ss == null)
-                {
-                    RESULT = null;
-                }
+                    System.out.println("\t regla 5b");
+                NodoFuncion nodo = new NodoFuncion(ft, ss, id);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 func_type ::= var_type:vt
@@ -225,7 +193,7 @@ func_args ::= func_args:fa COMMA var_type:vt ID:id
                     if(modoDepuracion)
                         System.out.println("\t regla 7a");
                     NodoBase nodoActual = fa;
-                    NodoDeclaracion nodoSiguiente = new NodoDeclaracion(new NodoVariable(id), vt, ((Scanner)parser.getScanner()).getLine());
+                    NodoDeclaracion nodoSiguiente = new NodoDeclaracion(new NodoVariable(id), vt);
                     if(nodoActual != null)
                     {
                         while(nodoActual.TieneHermano())
@@ -243,8 +211,10 @@ func_args ::= func_args:fa COMMA var_type:vt ID:id
             | var_type:vt ID:id
                 {:
                     if(modoDepuracion)
-                        System.out.println("\t regla 7b");                    
-                    RESULT = new NodoDeclaracion(new NodoVariable(id), vt, ((Scanner)parser.getScanner()).getLine());
+                        System.out.println("\t regla 7b");
+                    NodoDeclaracion  nodo = new NodoDeclaracion(new NodoVariable(id), vt);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :};
 
 var_type ::= BOOL 
@@ -278,20 +248,12 @@ stmt_seq ::= stmt_seq:ss stmt:sm SEMI
                     {
                         RESULT = sm;
                     }
-                    if(sm == null)
-                    {
-                        RESULT = null;
-                    }
                 :}
             | stmt:sm SEMI
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 9b");
                     RESULT = sm;
-                    if(sm == null)
-                    {
-                        RESULT = null;
-                    }
                 :};
 
 stmt ::= if_stmt:is 
@@ -299,195 +261,128 @@ stmt ::= if_stmt:is
                 if(modoDepuracion)
                         System.out.println("\t regla 10a");                
                 RESULT = is;
-                if(is == null)
-                {
-                    RESULT = null;
-                }
             :}
         | repeat_stmt:rs 
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10b");                
                 RESULT = rs;
-                if(rs == null)
-                {
-                    RESULT = null;
-                }
             :}
         | assign_stmt:as 
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10c");                
                 RESULT = as;
-                if(as == null)
-                {
-                    RESULT = null;
-                }
             :}
         | read_stmt:rs 
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10d");                
-                RESULT = rs;    
-                if(rs == null)
-                {
-                    RESULT = null;
-                }
+                RESULT = rs;
             :}
         | write_stmt:ws
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10e");                
                 RESULT = ws;
-                if(ws == null)
-                {
-                    RESULT = null;
-                }
             :}
         | decl_stmt:ds 
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10f");                
                 RESULT = ds;
-                if(ds == null)
-                {
-                    RESULT = null;
-                }
             :}
         | func_call:fc
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10g");                
                 RESULT = fc;
-                if(fc == null)
-                {
-                    RESULT = null;
-                }
             :}
         | for_stmt:fs
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10h");                
                 RESULT = fs;
-                if(fs == null)
-                {
-                    RESULT = null;
-                }
             :}
         | return_stmt:rs 
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10i");                
                 RESULT = rs;
-                if(rs == null)
-                {
-                    RESULT = null;
-                }
             :}
         | error
             {:
                 if(modoDepuracion)
                         System.out.println("\t regla 10j");
-                System.out.println("Ocurrió error en cup # 0004");
-                RESULT = null;
+                System.out.println("Error sintáctico. Línea " + (((Scanner)parser.getScanner()).getLine() - 1) + ".");
+                System.exit(0);
             :};
 
 if_stmt ::= IF exp:ep THEN stmt_seq:ss END 
-                {:
+                {:                    
                     if(modoDepuracion)
                         System.out.println("\t regla 11a");
-                    RESULT = new NodoIf(ep, ss);
-                    if(ep == null)
-                    {
-                        RESULT = null;
-                    }
-                    if(ss == null)
-                    {
-                        RESULT = null;
-                    }
+                    NodoIf nodo = new NodoIf(ep, ss);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;                    
                 :}
             | IF exp:ep THEN stmt_seq:ss ELSE stmt_seq:ss2 END
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 11b");
-                    RESULT = new NodoIf(ep, ss, ss2);
-                    if(ep == null)
-                    {
-                        RESULT = null;
-                    }
-                    if(ss == null)
-                    {
-                        RESULT = null;
-                    }
-                    if(ss2 == null)
-                    {
-                        RESULT = null;
-                    }
+                    NodoIf nodo = new NodoIf(ep, ss, ss2);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :};
 
 repeat_stmt ::= REPEAT stmt_seq:ss UNTIL exp:ep
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 12");
-                RESULT = new NodoRepeat(ss, ep);
-                if(ss == null)
-                {
-                    RESULT = null;
-                }
-                if(ep == null)
-                {
-                    RESULT = null;
-                }
+                NodoRepeat nodo = new NodoRepeat(ss, ep);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;                
             :};
 
-assign_stmt ::= ID:id ASSIGN exp:ep
+assign_stmt ::= exp:ep ASSIGN exp:ep2
             {:
-                if(modoDepuracion)
-                    System.out.println("\t regla 13a");
-                RESULT = new NodoAsignacion(id, ep);
-                if(ep == null)
+                if (!(ep instanceof NodoIdentificador))
                 {
-                    RESULT = null;
+                    System.out.println("Error sintáctico en la línea " + ((Scanner)parser.getScanner()).getLine() + ".");
+                    System.exit(0);
                 }
-            :}
-            | ID:id LSB exp:ep RSB ASSIGN exp:ep2
-            {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 13b");
-                RESULT = new NodoAsignacion(id, ep2, ep);
-                if(ep == null || ep2 == null)
-                {
-                    RESULT = null;
-                }
+                    System.out.println("\t regla 13");
+                NodoAsignacion nodo = new NodoAsignacion(ep, ep2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 read_stmt ::= READ ID:id
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 14");                
-                RESULT = new NodoLeer(id);                
+                    System.out.println("\t regla 14");
+                NodoLeer nodo = new NodoLeer(id);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 write_stmt ::= WRITE exp:ep
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 15");
-                RESULT = new NodoEscribir(ep);
-                if(ep == null)
-                {
-                    RESULT = null;
-                }
+                NodoEscribir nodo = new NodoEscribir(ep);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 decl_stmt ::= var_type:vt decl_var:dv
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 16");                
-                RESULT = new NodoDeclaracion(dv, vt, ((Scanner)parser.getScanner()).getLine());
-                if(dv == null)
-                {
-                    RESULT = null;
-                }
+                    System.out.println("\t regla 16");
+                NodoDeclaracion nodo = new NodoDeclaracion(dv, vt);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 decl_var ::= decl_var:dv COMMA decl_name:dn 
@@ -507,11 +402,7 @@ decl_var ::= decl_var:dv COMMA decl_name:dn
                     else
                     {
                         RESULT = dn;
-                    }
-                    if(dn == null)
-                    {
-                        RESULT = null;
-                    }
+                    }                    
                 :}
             | decl_name:dn
                 {:
@@ -527,31 +418,35 @@ decl_var ::= decl_var:dv COMMA decl_name:dn
 decl_name ::= ID:id LSB NUM:nm RSB 
                 {:
                     if(modoDepuracion)
-                        System.out.println("\t regla 19a");                    
-                    RESULT = new NodoVariable(id, nm);                                      
+                        System.out.println("\t regla 19a");
+                    NodoVariable nodo = new NodoVariable(id, nm);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :}
             | ID:id
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 19b");
-                    RESULT = new NodoVariable(id);                    
+                    NodoVariable nodo = new NodoVariable(id);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :};
 
 func_call ::= ID:id LPAREN call_args:ca RPAREN 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 20a");
-                    RESULT = new NodoLlamada(id, ca);                    
-                    if(ca == null)
-                    {
-                        RESULT = null;
-                    }
+                    NodoLlamada nodo = new NodoLlamada(id, ca);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :}
             | ID:id LPAREN RPAREN
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 20b");
-                    RESULT = new NodoLlamada(id);                    
+                    NodoLlamada nodo = new NodoLlamada(id);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :};
 
 call_args ::= call_args:ca COMMA exp:ep
@@ -571,10 +466,6 @@ call_args ::= call_args:ca COMMA exp:ep
                     else
                     {
                         RESULT = ep;
-                    }                    
-                    if(ep == null)
-                    {
-                        RESULT = null;
                     }
                 :}
             | exp:ep
@@ -582,243 +473,155 @@ call_args ::= call_args:ca COMMA exp:ep
                     if(modoDepuracion)
                         System.out.println("\t regla 21b");
                     RESULT = ep;
-                    if(ep == null)
-                    {
-                        RESULT = null;
-                    }
                 :};
 
 for_stmt ::= FOR LPAREN assign_stmt:as SEMI exp:ep SEMI assign_stmt:as2 RPAREN stmt_seq:ss END
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 22");
-                RESULT = new NodoFor(as, ep, as2, ss);
-                if(ep == null)
-                {
-                    RESULT = null;
-                }
-                if(as == null)
-                {
-                    RESULT = null;
-                }
-                if(as2 == null)
-                {
-                    RESULT = null;
-                }
-                if(ss == null)
-                {
-                    RESULT = null;
-                }
+                NodoFor nodo = new NodoFor(as, ep, as2, ss);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 return_stmt ::= RETURN exp:ep
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 23");
-                RESULT = new NodoReturn(ep);
-                if(ep == null)
-                {
-                    RESULT = null;
-                }
+                NodoReturn nodo = new NodoReturn(ep);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :};
 
 exp ::= exp:ep OR log_exp:le 
         {:
             if(modoDepuracion)
-                    System.out.println("\t regla 24a");
-            RESULT = new NodoOperacion(ep, tipoOp.ologico, le);
-            if(le == null)
-            {
-                RESULT = null;
-            }
+                System.out.println("\t regla 24a");
+            NodoOperacion nodo = new NodoOperacion(ep, tipoOp.ologico, le);
+            ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+            RESULT = nodo;
         :}
     | log_exp:le
         {:
             if(modoDepuracion)
                     System.out.println("\t regla 24b");
-            RESULT = le;
-            if(le == null)
-            {
-                RESULT = null;
-            }
+            RESULT = le;            
         :};
 
 log_exp ::= log_exp:le AND cmp_exp:ce 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 25a");
-                RESULT = new NodoOperacion(le, tipoOp.ylogico, ce);
-                if(ce == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(le, tipoOp.ylogico, ce);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | cmp_exp:ce
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 25b");
-                RESULT = ce;
-                if(ce == null)
-                {
-                    RESULT = null;
-                }
+                RESULT = ce;                
             :};
 
 cmp_exp ::= simple_exp:se LT simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26a");
-                RESULT = new NodoOperacion(se, tipoOp.menor, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.menor, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | simple_exp:se EQ simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26b");
-                RESULT = new NodoOperacion(se, tipoOp.igual, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.igual, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;                
             :}
         | simple_exp:se GT simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26c");
-                RESULT = new NodoOperacion(se, tipoOp.mayor, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.mayor, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | simple_exp:se NE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26d");
-                RESULT = new NodoOperacion(se, tipoOp.diferente, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.diferente, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | simple_exp:se GE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26e");
-                RESULT = new NodoOperacion(se, tipoOp.mayorigual, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.mayorigual, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | simple_exp:se LE simple_exp:se2 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26f");
-                RESULT = new NodoOperacion(se, tipoOp.menorigual, se2);
-                if(se == null)
-                {
-                    RESULT = null;
-                }
-                if(se2 == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(se, tipoOp.menorigual, se2);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | simple_exp:se        
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 26g");
                 RESULT = se;
-                if(se == null)
-                {
-                    RESULT = null;
-                }
             :};
 
 simple_exp ::= simple_exp:se PLUS term:tm 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 27a");
-                    RESULT = new NodoOperacion(se, tipoOp.mas, tm);
-                    if(tm == null)
-                    {
-                        RESULT = null;
-                    }
+                    NodoOperacion nodo = new NodoOperacion(se, tipoOp.mas, tm);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :}
             | simple_exp:se MINUS term:tm 
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 27b");
-                    RESULT = new NodoOperacion(se, tipoOp.menos, tm);
-                    if(tm == null)
-                    {
-                        RESULT = null;
-                    }
+                    NodoOperacion nodo = new NodoOperacion(se, tipoOp.menos, tm);
+                    ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                    RESULT = nodo;
                 :}
             | term:tm
                 {:
                     if(modoDepuracion)
                         System.out.println("\t regla 27c");
-                    RESULT = tm;
-                    if(tm == null)
-                    {
-                        RESULT = null;
-                    }
+                    RESULT = tm;                    
                 :};
 
 term ::= term:tm TIMES factor:ft 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 28a");
-                RESULT = new NodoOperacion(tm, tipoOp.por, ft);
-                if(ft == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(tm, tipoOp.por, ft);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | term:tm OVER factor:ft 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 28b");
-                RESULT = new NodoOperacion(tm, tipoOp.entre, ft);
-                if(ft == null)
-                {
-                    RESULT = null;
-                }
+                NodoOperacion nodo = new NodoOperacion(tm, tipoOp.entre, ft);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | factor:ft
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 28c");
                 RESULT = ft;
-                if(ft == null)
-                {
-                    RESULT = null;
-                }                
             :};
 
 factor ::= LPAREN exp:ep RPAREN 
@@ -826,49 +629,57 @@ factor ::= LPAREN exp:ep RPAREN
                 if(modoDepuracion)
                     System.out.println("\t regla 29a");
                 RESULT = ep;
-                if(ep == null)
-                {
-                    RESULT = null;
-                }
             :}
         | func_call:fc 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 29b");
                 RESULT = fc;
-                if(fc == null)
-                {
-                    RESULT = null;
-                }
             :}
         | NUM:nm 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 29c");
-                RESULT = new NodoValor(nm, tipoVariable.entero);
+                NodoValor nodo = new NodoValor(nm, tipoVariable.entero);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | ID:id 
             {:
                 if(modoDepuracion)
                     System.out.println("\t regla 29d");
-                RESULT = new NodoIdentificador(id);
+                NodoIdentificador nodo = new NodoIdentificador(id);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
+            :}
+        | ID:id LSB exp:ep RSB
+            {:
+                if(modoDepuracion)
+                    System.out.println("\t regla 29e");
+                NodoIdentificador nodo = new NodoIdentificador(id, ep);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | TRUE 
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 29e");
-                RESULT = new NodoValor(true, tipoVariable.booleano);
+                    System.out.println("\t regla 29f");
+                NodoValor nodo = new NodoValor(true, tipoVariable.booleano);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | FALSE 
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 29f");
-                RESULT = new NodoValor(false, tipoVariable.booleano);
+                    System.out.println("\t regla 29g");
+                NodoValor nodo = new NodoValor(false, tipoVariable.booleano);
+                ((NodoBase) nodo).setNumeroLinea(((Scanner)parser.getScanner()).getLine());
+                RESULT = nodo;
             :}
         | error
             {:
                 if(modoDepuracion)
-                    System.out.println("\t regla 29g");
-                System.out.println("Ocurrió error en cup # 0003");                
-                RESULT = null;
+                    System.out.println("\t regla 29h");
+                System.out.println("Error sintáctico. Línea " + (((Scanner)parser.getScanner()).getLine() - 1) + ".");
+                System.exit(0);
             :};

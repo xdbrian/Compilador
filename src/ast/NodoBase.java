@@ -1,8 +1,9 @@
 package ast;
 
 public class NodoBase {
-    
-    private NodoBase HermanoDerecha;    
+
+    private NodoBase HermanoDerecha;
+    private int numeroLinea;
 
     public NodoBase(NodoBase hermanoDerecha) {
         super();
@@ -24,5 +25,13 @@ public class NodoBase {
 
     public boolean TieneHermano() {
         return (HermanoDerecha != null);
-    }    
+    }
+
+    public void setNumeroLinea(int numeroLinea) {
+        this.numeroLinea = numeroLinea;
+    }
+
+    public int getNumeroLinea() {
+        return numeroLinea;
+    }
 }
